@@ -12,17 +12,17 @@ tempdir="$( mktemp -t node_XXXX )"
 rm -rf $tempdir
 mkdir -p $tempdir
 
-pushd $tempdir
+pushd $tempdir &> /dev/null
 curl -s -L -o tmp-nodejs.tar.gz $NODE_ARCHIVE
 tar -zxvf tmp-nodejs.tar.gz > /dev/null
 rm tmp-nodejs.tar.gz
-popd
+popd &> /dev/null
 
 mkdir -v -p $BUILD_DIR/.heroku/vendor
-pushd $BUILD_DIR/.heroku/vendor
+pushd $BUILD_DIR/.heroku/vendor &> /dev/null
 rm -rf node
 mv $tempdir/$NODE_BASENAME node
-popd
+popd &> /dev/null
 
 export PATH=$BUILD_DIR/.heroku/vendor/node/bin:$PATH
 
@@ -30,6 +30,12 @@ echo "       Running npm to set up dependencies"
 npm install &> /dev/null
 
 echo "       Running Bower"
+pushd $BUILD_DIR/public/static_build &> /dev/null
+../../node_modules/bower/bin/bower install &> /dev/null
+popd &> /dev/null
+pushd $BUILD_DIR/staff/static_build &> /dev/null
+../../node_modules/bower/bin/bower install &> /dev/null
+popd &> /dev/null
 
 echo "       Running Brunch"
 ./node_modules/brunch/bin/brunch build
