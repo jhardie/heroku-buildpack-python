@@ -27,7 +27,7 @@ popd
 export PATH=$BUILD_DIR/.heroku/vendor/node/bin:$PATH
 
 echo "       Running npm to set up dependencies"
-npm install
+npm install &> /dev/null
 
 echo "       Running Bower"
 
