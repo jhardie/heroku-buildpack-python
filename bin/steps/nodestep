@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+echo "-----> Installing Node to brunch Bower and Brunch"
+
+echo "       node"
+NODE_VERSION=0.10.24
+NODE_BASENAME=node-v${NODE_VERSION}-linux-x64
+NODE_ARCHIVE="http://nodejs.org/dist/v${NODE_VERSION}/${NODE_BASENAME}.tar.gz"
+
+# make a temp directory
+tempdir="$( mktemp -t node_XXXX )"
+rm -rf $tempdir
+mkdir -p $tempdir
+
+pushd $tempdir
+curl -s -L -o tmp-nodejs.tar.gz $NODE_ARCHIVE
+tar -zxvf tmp-nodejs.tar.gz > /dev/null
+rm tmp-nodejs.tar.gz
+popd
+
+mkdir -v -p $BUILD_DIR/.heroku/vendor
+pushd $BUILD_DIR/.heroku/vendor
+rm -rf node
+mv $tempdir/$NODE_BASENAME node
+popd
+
+export PATH=$BUILD_DIR/.heroku/vendor/node/bin:$PATH
+
+echo "       Running npm to set up dependencies"
+npm install
+
+echo "       Running Bower"
+
+echo "       Running Brunch"
+./node_modules/brunch/bin/brunch build
